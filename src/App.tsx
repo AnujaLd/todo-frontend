@@ -1,5 +1,3 @@
-app.tsx
-
 import { useState } from 'react'
 import TodoApp from './components/TodoApp'
 import './App.css'
