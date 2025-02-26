@@ -1,6 +1,15 @@
 import React, { useState, useEffect } from "react";
-import { TextField, Button, Card, CardContent, Typography, Grid, Container } from "@mui/material";
-import { getTodos, createTodo,toggleTodo } from "../REST_URLs/rest_url"; 
+import {
+  TextField,
+  Button,
+  Card,
+  CardContent,
+  Typography,
+  Grid,
+  Container,
+  Box,
+} from "@mui/material";
+import { getTodos, createTodo, toggleTodo } from "../REST_URLs/rest_url";
 
 const TodoApp = () => {
   interface Task {
@@ -8,7 +17,7 @@ const TodoApp = () => {
     title: string;
     description: string;
   }
-  
+
   const [tasks, setTasks] = useState<Task[]>([]);
   const [newTask, setNewTask] = useState({ title: "", description: "" });
 
@@ -17,17 +26,14 @@ const TodoApp = () => {
       const result = await getTodos();
       setTasks(result.data.filter((task: any) => !task.completed));
     };
-  
     fetchTodos();
   }, []);
-  
 
   const handleAddTask = async () => {
     if (newTask.title.trim() && newTask.description.trim()) {
       const result = await createTodo(newTask.title, newTask.description);
-
       if (result.success) {
-        setTasks(prev => [result.data, ...prev.slice(0, 4)]);
+        setTasks((prev) => [result.data, ...prev.slice(0, 4)]);
         setNewTask({ title: "", description: "" });
       }
     }
@@ -35,18 +41,35 @@ const TodoApp = () => {
 
   const handleCompleteTask = async (id: number) => {
     await toggleTodo(id);
-    setTasks(tasks.filter(task => task.id !== id));
+    setTasks(tasks.filter((task) => task.id !== id));
   };
-  
 
   return (
-    <Container maxWidth="md" style={{ padding: 20, backgroundColor: "#f5f5f5", borderRadius: 10 }}>
-      <Typography variant="h4" align="center" gutterBottom style={{ fontWeight: "bold", color: "#3f51b5" }}>
-        To-Do List
-      </Typography>
+    <Container
+      maxWidth="lg"
+      sx={{
+        padding: 4,
+        backgroundColor: "#f5f5f5",
+        borderRadius: 2,
+        minHeight: "100vh",
+      }}
+    >
       <Grid container spacing={3}>
-        <Grid item xs={12} md={4} style={{ backgroundColor: "#ffffff", padding: 20, borderRadius: 10 }}>
-          <Typography variant="h6" gutterBottom style={{ color: "#3f51b5" }}>Add a Task</Typography>
+        {/* Left Side - Add Task */}
+        <Grid
+          item
+          xs={12}
+          md={4}
+          sx={{
+            backgroundColor: "#ffffff",
+            padding: 3,
+            borderRadius: 2,
+            boxShadow: 2,
+          }}
+        >
+          <Typography variant="h6" gutterBottom>
+            Add a Task
+          </Typography>
           <TextField
             label="Title"
             fullWidth
@@ -60,23 +83,48 @@ const TodoApp = () => {
             fullWidth
             variant="outlined"
             value={newTask.description}
-            onChange={(e) => setNewTask({ ...newTask, description: e.target.value })}
+            onChange={(e) =>
+              setNewTask({ ...newTask, description: e.target.value })
+            }
             margin="normal"
           />
-          <Button variant="contained" color="primary" fullWidth onClick={handleAddTask} style={{ marginTop: 10 }}>
-            Add Task
+          <Button
+            variant="contained"
+            sx={{ backgroundColor: "#0000FF", color: "#fff", mt: 2 }}
+            fullWidth
+            onClick={handleAddTask}
+          >
+            Add
           </Button>
         </Grid>
+
+        {/* Right Side - Task List */}
         <Grid item xs={12} md={8}>
-          {tasks.map((task: any) => (
-            <Card key={task.id} style={{ marginBottom: 10, backgroundColor: "#e3f2fd", borderLeft: "5px solid #3f51b5" }}>
-              <CardContent>
-                <Typography variant="h6" style={{ color: "#3f51b5", fontWeight: "bold" }}>{task.task}</Typography>
-                <Typography style={{ marginBottom: 10 }}>{task.description}</Typography>
-                <Button variant="contained" color="secondary" onClick={() => handleCompleteTask(task.id)}>
-                  Done
-                </Button>
-              </CardContent>
+          {tasks.map((task) => (
+            <Card
+              key={task.id}
+              sx={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                backgroundColor: "#D3D3D3",
+                padding: 2,
+                mb: 2,
+              }}
+            >
+              <Box>
+                <Typography variant="h6" sx={{ fontWeight: "bold" }}>
+                  {task.title}
+                </Typography>
+                <Typography>{task.description}</Typography>
+              </Box>
+              <Button
+                variant="contained"
+                sx={{ backgroundColor: "#A9A9A9", color: "#000" }}
+                onClick={() => handleCompleteTask(task.id)}
+              >
+                Done
+              </Button>
             </Card>
           ))}
         </Grid>
